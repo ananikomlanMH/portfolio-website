@@ -1,0 +1,20 @@
+{
+  "name": "Anani Komlan - Software Engineer",
+  "short_name": "Anani Komlan",
+  "description": "Anani Komlan, ingénieur logiciel à Niamey : backend, architecture logicielle et open source. Découvrez mes projets, mon expertise et mon parcours.",
+  "lang": "fr",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "assets/images/favicons/apple-touch-icon-114x114.png",
+      "sizes": "114x114",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
