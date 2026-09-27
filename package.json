@@ -1,0 +1,10 @@
+{
+  "name": "anani-portfolio",
+  "private": true,
+  "scripts": {
+    "minify:css": "node scripts/minify-css.cjs"
+  },
+  "devDependencies": {
+    "clean-css": "5.3.3"
+  }
+}

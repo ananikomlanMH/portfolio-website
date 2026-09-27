@@ -1,6 +1,6 @@
 (function ($) {
     'use strict';
-    const animeBreakPoint = 1199;
+    const animationMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const headerTransition = 300;
     if ('ontouchstart' in window || navigator.maxTouchPoints > 0) $('body').addClass('is-touchable');
     $('footer, [data-anime], [data-fancy-text]').each(function () {
@@ -141,9 +141,9 @@
         const $self = $(this);
         const animeOptions = $self.data('anime');
 
-        const delayValue = animeOptions.delay;
+        const delayValue = animeOptions ? animeOptions.delay || 0 : 0;
 
-        if (animeOptions && getWindowWidth() > animeBreakPoint) {
+        if (animeOptions && !animationMotion.matches) {
             try {
                 $self.on('appear', function () {
                     if ($self.hasClass('appear') || $self.hasClass('animating')) {
@@ -292,12 +292,16 @@
             duration = ftOptions.duration ? ftOptions.duration : 3000,
             content = ftOptions.string;
 
+        if (content && animationMotion.matches) {
+            item.textContent = content[0];
+            return;
+        }
         if (content) {
             item.innerHTML = `<span class="anime-text">${content[0]}</span>`;
             item.querySelector('.anime-text').setAttribute('data-splitting', true);
             Splitting();
 
-            if (getWindowWidth() > animeBreakPoint) {
+            if (!animationMotion.matches) {
                 switch (text_effect) {
                     case 'rotate':
                         rotateTextAnimation(item, ftOptions);

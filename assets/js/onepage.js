@@ -1,5 +1,33 @@
 ﻿(function () {
     'use strict';
+    // A little hello for developers exploring the portfolio.
+    console.info('%c' + [
+        "  /$$$$$$  /$$   /$$  /$$$$$$  /$$   /$$ /$$$$$$       /$$   /$$  /$$$$$$  /$$      /$$ /$$        /$$$$$$  /$$   /$$",
+        " /$$__  $$| $$$ | $$ /$$__  $$| $$$ | $$|_  $$_/      | $$  /$$/ /$$__  $$| $$$    /$$$| $$       /$$__  $$| $$$ | $$",
+        "| $$  \\ $$| $$$$| $$| $$  \\ $$| $$$$| $$  | $$        | $$ /$$/ | $$  \\ $$| $$$$  /$$$$| $$      | $$  \\ $$| $$$$| $$",
+        "| $$$$$$$$| $$ $$ $$| $$$$$$$$| $$ $$ $$  | $$        | $$$$$/  | $$  | $$| $$ $$/$$ $$| $$      | $$$$$$$$| $$ $$ $$",
+        "| $$__  $$| $$  $$$$| $$__  $$| $$  $$$$  | $$        | $$  $$  | $$  | $$| $$  $$$| $$| $$      | $$__  $$| $$  $$$$",
+        "| $$  | $$| $$\\  $$$| $$  | $$| $$\\  $$$  | $$        | $$\\  $$ | $$  | $$| $$\\  $ | $$| $$      | $$  | $$| $$\\  $$$",
+        "| $$  | $$| $$ \\  $$| $$  | $$| $$ \\  $$ /$$$$$$      | $$ \\  $$|  $$$$$$/| $$ \\/  | $$| $$$$$$$$| $$  | $$| $$ \\  $$",
+        "|__/  |__/|__/  \\__/|__/  |__/|__/  \\__/|______/      |__/  \\__/ \\______/ |__/     |__/|________/|__/  |__/|__/  \\__/"
+    ].join('\n'), 'font-family: monospace; font-size: 10px; line-height: 1.15; color: ' +
+        (document.documentElement.dataset.theme === 'dark' ? '#ffea00' : '#806b00'));
+    console.info([
+        "ANANI KOMLAN | Software Engineer",
+        "Backend & Architecture | Open Source",
+        "",
+        "Tiens, un dev dans les coulisses. Bienvenue !",
+        "Tu as ouvert la console. Le code review commence donc ici.",
+        "J'aime les API claires, les architectures solides",
+        "et les bugs qui se reproduisent du premier coup. On peut r\u00eaver.",
+        "",
+        "Un bug rep\u00e9r\u00e9 ? Une id\u00e9e ? Un projet \u00e0 construire ?",
+        "Discutons : inanakomlan@gmail.com",
+        "Niamey, Niger | https://portfolio.ananikmh17.workers.dev/",
+        "",
+        "// TODO: prendre un caf\u00e9, puis simplifier encore ce code."
+    ].join('\n'));
+
     var projectDialog = document.getElementById('project-drawer');
     var projects = JSON.parse(document.getElementById('project-data').textContent);
     var sliders = [],
@@ -105,7 +133,7 @@
         }
         var booking = event.target.closest('[data-open-booking]');
         if (booking) {
-            renderCalendar();
+            initializeBookingCalendar();
             openDrawer(document.getElementById('booking-drawer'), booking);
         }
     });
@@ -232,7 +260,10 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateNavIndicators);
     updateHeader();
     // Les créneaux sont proposés par e-mail ; aucun agenda distant n’est consulté.
-    function todayInNiamey() {
+    var bookingCalendar = null;
+    function initializeBookingCalendar() {
+        if (bookingCalendar) { bookingCalendar(); return; }
+        function todayInNiamey() {
         var parts = new Intl.DateTimeFormat('en-GB', {
             timeZone: 'Africa/Niamey',
             year: 'numeric',
@@ -353,6 +384,9 @@
         document.getElementById('booking-status').textContent =
             'Envoyez le message préparé dans votre messagerie pour transmettre la demande. Le rendez-vous sera confirmé par e-mail.';
     });
+        bookingCalendar = renderCalendar;
+        renderCalendar();
+    }
     document.addEventListener('visibilitychange', syncAutoplay);
     reducedMotion.addEventListener('change', syncAutoplay);
     syncAutoplay();

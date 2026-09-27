@@ -105,3 +105,9 @@ html[data-theme] .navbar-nav .nav-item > .nav-link::after { content: none !impor
         backdrop-filter: none;
     }
 }
+
+/* Text selection follows the active theme. */
+:root { --selection-bg: #171717; --selection-ink: #ffffff; }
+:root[data-theme="dark"] { --selection-bg: #ffea00; --selection-ink: #171717; }
+::selection { background: var(--selection-bg); color: var(--selection-ink); text-shadow: none; -webkit-text-fill-color: var(--selection-ink); }
+::-moz-selection { background: var(--selection-bg); color: var(--selection-ink); text-shadow: none; }

@@ -5,10 +5,30 @@
     var radios = document.querySelectorAll('input[name="theme-mode"]');
     var video = document.querySelector('video.body-overlay');
     var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var videoReady = false;
+    function allowBackgroundVideo() {
+        videoReady = true;
+        syncVideo();
+    }
+    function deferBackgroundVideo() {
+        window.setTimeout(function () {
+            if ('requestIdleCallback' in window) {
+                window.requestIdleCallback(allowBackgroundVideo, { timeout: 2000 });
+            } else allowBackgroundVideo();
+        }, 1000);
+    }
+    if (document.readyState === 'complete') deferBackgroundVideo();
+    else window.addEventListener('load', deferBackgroundVideo, { once: true });
     function syncVideo() {
         if (!video) return;
         video.muted = true;
-        if (root.dataset.theme === 'dark' && !reducedMotion.matches && !document.hidden) {
+        if (videoReady && root.dataset.theme === 'dark' && !reducedMotion.matches && !document.hidden) {
+            var source = video.querySelector('source[data-src]');
+            if (source) {
+                source.src = source.dataset.src;
+                source.removeAttribute('data-src');
+                video.load();
+            }
             var playback = video.play();
             if (playback && playback.catch) playback.catch(function () {});
         } else video.pause();

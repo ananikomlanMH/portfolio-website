@@ -84,3 +84,18 @@ Documentation : [Cloudflare Workers Static Assets](https://developers.cloudflare
 - Après déploiement, vérifier les URL `/robots.txt`, `/sitemap.xml`, `/site.webmanifest` et `/assets/images/social-preview.png`.
 
 Le manifeste décrit l'application ; il n'implémente pas de fonctionnement hors ligne.
+
+## Minification CSS
+
+Les sept feuilles de style chargees par le site ont une copie minifiee. Les originaux restent dans `assets/css/` et ne sont jamais ecrases.
+
+Apres modification des styles sources :
+
+```sh
+npm ci
+npm run minify:css
+```
+
+Sous PowerShell, utiliser `npm.cmd` si la politique locale bloque `npm.ps1`.
+Versionner les originaux et les copies minifiees generees. Executer la minification avant de preparer `dist/` pour le deploiement.
+Les fichiers sources `vendors.min.css` et `icon.min.css` restent intacts ; leurs copies sont `vendors.optimized.min.css` et `icon.optimized.min.css`.
