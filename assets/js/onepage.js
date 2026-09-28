@@ -166,6 +166,7 @@
         directionAnchor = lastY,
         direction = 0,
         queued = false;
+    var menuOrder = header.querySelector('.menu-order');
     var navLinks = Array.from(document.querySelectorAll('.navbar-nav .nav-link'));
     // Le menu mobile est cloné : regrouper les liens par section, pas par index.
     var sectionIds = Array.from(new Set(navLinks.map(function (link) {
@@ -173,10 +174,18 @@
     })));
     var sections = sectionIds.map(function (id) { return document.querySelector(id); });
     var navLists = Array.from(document.querySelectorAll('.navbar-nav'));
+    var aboutSection = document.getElementById('a-propos');
+    var contactSection = document.getElementById('contact');
+    function hasReachedAbout() {
+        return !!aboutSection && aboutSection.getBoundingClientRect().top <= 35;
+    }
     function updateNavIndicators() {
         navLists.forEach(function (list) {
             var activeLink = list.querySelector('.nav-link.active');
-            if (!activeLink) return;
+            if (!activeLink) {
+                list.style.setProperty('--nav-active-opacity', '0');
+                return;
+            }
             var listRect = list.getBoundingClientRect();
             var linkRect = activeLink.getBoundingClientRect();
             if (!linkRect.width || !linkRect.height) {
@@ -196,11 +205,20 @@
         });
     }
     function updateCurrent() {
-        var current = 0;
+        var current = -1;
         sections.forEach(function (section, index) {
-            if (section && section.getBoundingClientRect().top <= window.innerHeight * 0.3) current = index;
+            if (section && section.getBoundingClientRect().top <= 35) current = index;
         });
-        if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 5)
+        // The short footer can dominate the viewport before reaching its top edge.
+        if (hasReachedAbout() && contactSection) {
+            var contactRect = contactSection.getBoundingClientRect();
+            var visibleContact = Math.max(0, Math.min(contactRect.bottom, window.innerHeight) - Math.max(contactRect.top, 0));
+            var contactThreshold = Math.min(contactRect.height, window.innerHeight) * 0.5;
+            if (contactRect.height > 0 && contactRect.top <= window.innerHeight * 0.5 && visibleContact >= contactThreshold) {
+                current = sectionIds.indexOf('#contact');
+            }
+        }
+        if (hasReachedAbout() && window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 5)
             current = sections.length - 1;
         navLinks.forEach(function (link) {
             var active = link.getAttribute('href') === sectionIds[current];
@@ -220,12 +238,20 @@
             directionAnchor = lastY;
             direction = nextDirection;
         }
-        var mobileHeader = window.innerWidth < 992;
-        header.classList.toggle('is-pilled', mobileHeader || y > 150);
+        var mobileHeader = window.innerWidth < 1200;
+        var pilled = hasReachedAbout();
+        header.classList.toggle('is-pilled', pilled);
+        var hideMenu = !pilled && y > 70;
+        if (menuOrder) {
+            menuOrder.classList.toggle('is-before-about-hidden', hideMenu);
+            menuOrder.inert = hideMenu;
+            if (hideMenu) menuOrder.setAttribute('aria-hidden', 'true');
+            else menuOrder.removeAttribute('aria-hidden');
+        }
         var menuOpen =
             document.body.classList.contains('navbar-collapse-show') ||
             header.querySelector('.navbar-toggler[aria-expanded="true"]');
-        if (mobileHeader || y < 80 || menuOpen) header.classList.remove('is-hidden');
+        if (mobileHeader || !pilled || menuOpen) header.classList.remove('is-hidden');
         else if (Math.abs(y - directionAnchor) >= 8) header.classList.toggle('is-hidden', direction > 0);
         updateCurrent();
         lastY = y;
@@ -245,8 +271,32 @@
         header.classList.remove('is-hidden');
     });
     window.addEventListener('resize', updateHeader);
-    window.addEventListener('hashchange', updateCurrent);
-    window.addEventListener('load', updateCurrent);
+    // Home points to the document origin, not the section's header-offset position.
+    function scrollHomeToTop(behavior) {
+        window.scrollTo({ top: 0, left: 0, behavior: behavior });
+        updateHeader();
+    }
+    function syncHomeAnchor() {
+        if (window.location.hash !== '#accueil') return;
+        requestAnimationFrame(function () { scrollHomeToTop('instant'); });
+    }
+    document.addEventListener('click', function (event) {
+        if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        var link = event.target.closest('a[href]');
+        if (!link || link.hasAttribute('download') || (link.target && link.target !== '_self')) return;
+        var target = new URL(link.href, window.location.href);
+        var normalizePath = function (path) { return path.replace(/\/index\.html$/, '/'); };
+        if (target.hash !== '#accueil' || target.origin !== window.location.origin ||
+            normalizePath(target.pathname) !== normalizePath(window.location.pathname) || target.search !== window.location.search) return;
+        event.preventDefault();
+        if (window.location.hash !== '#accueil') window.history.pushState(null, '', target.href);
+        scrollHomeToTop(reducedMotion.matches ? 'instant' : 'smooth');
+    });
+    window.addEventListener('hashchange', syncHomeAnchor);
+    window.addEventListener('load', syncHomeAnchor);
+    if (document.readyState === 'complete') syncHomeAnchor();
+    window.addEventListener('hashchange', updateHeader);
+    window.addEventListener('load', updateHeader);
     document.addEventListener('shown.bs.collapse', updateNavIndicators);
     document.addEventListener('transitionend', function (event) {
         if (event.target.closest('.navbar-nav, .navbar-full-screen-menu-inner, .nav-pill-wrap')) {

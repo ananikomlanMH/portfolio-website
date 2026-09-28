@@ -29,6 +29,9 @@
   }
 }
 @media (max-width: 991px) {
+  header .navbar [class*=col-]{
+    padding: 0 !important;
+  }
   html {
     font-size: 14px;
   }

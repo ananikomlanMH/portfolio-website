@@ -111,3 +111,144 @@ html[data-theme] .navbar-nav .nav-item > .nav-link::after { content: none !impor
 :root[data-theme="dark"] { --selection-bg: #ffea00; --selection-ink: #171717; }
 ::selection { background: var(--selection-bg); color: var(--selection-ink); text-shadow: none; -webkit-text-fill-color: var(--selection-ink); }
 ::-moz-selection { background: var(--selection-bg); color: var(--selection-ink); text-shadow: none; }
+
+/* Brand stays at the document top; only the menu stays on screen. */
+@media (max-width: 1199px) {
+    .smart-header,
+    .smart-header.is-pilled,
+    .smart-header.is-hidden,
+    .smart-header.is-pilled.is-hidden {
+        position: absolute !important;
+        inset: 0 0 auto !important;
+        transform: none !important;
+        z-index: 999;
+        will-change: auto;
+    }
+    .smart-header .navbar-brand,
+    .smart-header.is-pilled .navbar-brand {
+        width: 68px;
+        height: 68px;
+        min-width: 68px;
+        padding: 0;
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        backdrop-filter: none;
+        box-sizing: border-box;
+    }
+    .smart-header .nav-pill-wrap,
+    .smart-header.is-pilled .nav-pill-wrap {
+        position: fixed !important;
+        top: 23px;
+        right: 25px;
+    }
+    .smart-header .navbar-brand img,
+    .smart-header.is-pilled .navbar-brand img {
+        max-width: 48px;
+        max-height: 39px;
+        object-fit: contain;
+    }
+}
+@media (max-width: 991px) {
+    html[data-theme] body[data-mobile-nav-style=full-screen-menu] .navbar-full-screen-menu-inner .navbar-toggler-clone { top: 23px !important; }
+}
+
+/* Glass menu only while the header is pilled. */
+:root {
+    --nav-glass-bg: rgba(255,255,255,.62);
+    --nav-glass-border: rgba(180,180,180,.4);
+    --nav-glass-shadow: 0 8px 28px rgba(0,0,0,.09), inset 0 1px 0 rgba(255,255,255,.8);
+}
+:root[data-theme="dark"] {
+    --nav-glass-bg: rgba(30,30,30,.58);
+    --nav-glass-border: rgba(255,255,255,.18);
+    --nav-glass-shadow: 0 8px 28px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.1);
+}
+
+html[data-theme] .smart-header .nav-pill-wrap {
+    background: transparent;
+    border: 1px solid transparent;
+    box-shadow: none;
+    -webkit-backdrop-filter: blur(0px) saturate(100%);
+    backdrop-filter: blur(0px) saturate(100%);
+    transition: padding .35s ease, background-color .5s ease,
+        border-color .5s ease, box-shadow .5s ease,
+        -webkit-backdrop-filter .5s ease, backdrop-filter .5s ease,
+        opacity .32s ease, translate .32s cubic-bezier(.22,.7,.2,1), visibility 0s;
+    opacity: 1;
+    translate: 0 0;
+    visibility: visible;
+}
+html[data-theme] .smart-header.is-pilled .nav-pill-wrap {
+    background: var(--page-pill);
+    border-color: var(--nav-glass-border);
+    box-shadow: var(--nav-glass-shadow);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    html[data-theme] .smart-header.is-pilled .nav-pill-wrap {
+        background: var(--nav-glass-bg);
+        -webkit-backdrop-filter: blur(16px) saturate(145%);
+        backdrop-filter: blur(16px) saturate(145%);
+    }
+}
+/* The inner button shares the menu surface. */
+html[data-theme] .smart-header .nav-pill-wrap > .navbar-toggler {
+    background: transparent;
+    border: 0;
+    border-radius: inherit;
+    box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html[data-theme] .smart-header .nav-pill-wrap { transition: none; }
+}
+
+@media (min-width: 1200px) {
+    .smart-header:not(.is-pilled) .navbar-nav::after { top: -24px; }
+}
+
+
+/* Brand in the full-screen navigation, aligned with the header logo. */
+.navbar-full-screen-menu-inner .full-screen-brand {
+    position: absolute;
+    top: 14px;
+    left: 25px;
+    width: 68px;
+    height: 68px;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    z-index: 1051;
+}
+.navbar-full-screen-menu-inner .full-screen-brand img {
+    width: auto;
+    max-width: 48px;
+    max-height: 39px;
+    object-fit: contain;
+}
+.navbar-full-screen-menu-inner .full-screen-brand .default-logo { display: block; visibility: visible; opacity: 1; }
+.navbar-full-screen-menu-inner .full-screen-brand .alt-logo,
+.navbar-full-screen-menu-inner .full-screen-brand .mobile-logo { display: none; }
+
+/* In the hero, keep the logo but hide navigation until the page top. */
+html[data-theme] .smart-header .menu-order.is-before-about-hidden {
+    opacity: 0;
+    translate: 0 -8px;
+    visibility: hidden;
+    pointer-events: none;
+    transition-delay: 0s, 0s, 0s, 0s, 0s, 0s, 0s, 0s, .32s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html[data-theme] .smart-header .menu-order.is-before-about-hidden { transition-delay: 0s; translate: none; }
+}

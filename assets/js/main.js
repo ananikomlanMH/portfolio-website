@@ -17,6 +17,11 @@
             .attr('id', 'navbarNav-clone')
             .insertAfter('.page-layout');
         $('.navbar-toggler-clone, .navbar-collapse-clone').wrapAll('<div class="navbar-full-screen-menu-inner"></div>');
+        $('.smart-header .navbar-brand').first().clone()
+            .addClass('full-screen-brand inner-link')
+            .attr('aria-label', 'Anani Komlan - Accueil')
+            .prependTo('.navbar-full-screen-menu-inner')
+            .on('click', closeMenu);
         $('.navbar-toggler')
             .attr('data-bs-target', '#navbarNav-clone')
             .attr('data-target', '#navbarNav-clone')
@@ -45,7 +50,8 @@
         if (!$(event.target).closest('.navbar-full-screen-menu-inner, .navbar-toggler').length) closeMenu();
     });
     if (typeof $.fn.smoothScroll === 'function') {
-        $('.inner-link').smoothScroll({ speed: 800, offset: 1, beforeScroll: closeMenu });
+        $('.inner-link').filter(function () { return this.hash !== '#accueil'; })
+            .smoothScroll({ speed: 800, offset: 1, beforeScroll: closeMenu });
     }
     function getHeaderHeight() {
         return $('header nav.navbar').outerHeight() || 0;
